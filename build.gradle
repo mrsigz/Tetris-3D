@@ -13,7 +13,7 @@ allprojects {
 
     version = '1.0'
     ext {
-        appName = 'Ingibergu_Sigurgrimur_Assignment_5'
+        appName = 'Ingibergu_Sigurgrimur_Tetris_3D'
         gdxVersion = '1.6.4'
         roboVMVersion = '1.5.0'
         box2DLightsVersion = '1.4'
