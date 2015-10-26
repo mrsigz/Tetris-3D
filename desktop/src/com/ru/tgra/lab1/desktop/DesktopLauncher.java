@@ -8,7 +8,7 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 
-		config.title = "Lab1"; // or whatever you like
+		config.title = "Tetris 3D"; // or whatever you like
 		config.width = 1028;  //experiment with
 		config.height = 748;  //the window size
 		config.x = 150;
