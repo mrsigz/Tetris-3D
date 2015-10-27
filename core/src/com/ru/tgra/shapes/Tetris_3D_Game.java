@@ -107,20 +107,156 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		shader.setLightPosition(1, 1, 1, 1.0f);
 		shader.setGlobalAmbience(1, 1, 1, 1);
 		
-		ModelMatrix.main.pushMatrix();
+		/*ModelMatrix.main.pushMatrix();
 		shader.setMaterialDiffuse(1, 1, 1, 1);
 		shader.setMaterialSpecular(1, 1, 1, 1);
 		shader.setMaterialShine(50);
 		ModelMatrix.main.addTranslation(1,1, 1);
 		//ModelMatrix.main.addScale(1, 1, 1);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube();
+		//BoxGraphic.drawSolidCube();
 		//SphereGraphic.drawSolidSphere();
-		ModelMatrix.main.popMatrix();
+		ModelMatrix.main.popMatrix();*/
+		shapeT();
 
 		
 	}
+	
+	
+	public void shapeO(){
+		ModelMatrix.main.pushMatrix();
+		shader.setMaterialDiffuse(1, 1, 0, 1);
+		shader.setMaterialSpecular(1, 1, 1, 1);
+		shader.setMaterialShine(50);
+		shader.setModelMatrix(ModelMatrix.main.getMatrix());
+		BoxGraphic.drawSolidCube();
+		ModelMatrix.main.addTranslation(1, 0, 0);
+		shader.setModelMatrix(ModelMatrix.main.getMatrix());
+		
+		BoxGraphic.drawSolidCube();
+		ModelMatrix.main.addTranslation(0,1,0);
+		shader.setModelMatrix(ModelMatrix.main.getMatrix());
+		BoxGraphic.drawSolidCube();
+		ModelMatrix.main.addTranslation(-1,0,0);
+		shader.setModelMatrix(ModelMatrix.main.getMatrix());
+		BoxGraphic.drawSolidCube();
+		ModelMatrix.main.popMatrix();
+	}
+	public void shapeI() {
+		ModelMatrix.main.pushMatrix();
+		shader.setMaterialDiffuse(0.2f, 0.2f, 1, 1);
+		shader.setMaterialSpecular(1, 1, 1, 1);
+		shader.setMaterialShine(50);
+		shader.setModelMatrix(ModelMatrix.main.getMatrix());
+		BoxGraphic.drawSolidCube();
+		ModelMatrix.main.addTranslation(0, 1, 0);
+		shader.setModelMatrix(ModelMatrix.main.getMatrix());
+		
+		BoxGraphic.drawSolidCube();
+		ModelMatrix.main.addTranslation(0,1,0);
+		shader.setModelMatrix(ModelMatrix.main.getMatrix());
+		BoxGraphic.drawSolidCube();
+		ModelMatrix.main.addTranslation(0,1,0);
+		shader.setModelMatrix(ModelMatrix.main.getMatrix());
+		BoxGraphic.drawSolidCube();
+		ModelMatrix.main.popMatrix();
+	}
+	public void shapeS() {
+		ModelMatrix.main.pushMatrix();
+		shader.setMaterialDiffuse(1, 0.5f, 0.0f, 1);
+		shader.setMaterialSpecular(1, 1, 1, 1);
+		shader.setMaterialShine(50);
+		shader.setModelMatrix(ModelMatrix.main.getMatrix());
+		BoxGraphic.drawSolidCube();
+		ModelMatrix.main.addTranslation(1, 0, 0);
+		shader.setModelMatrix(ModelMatrix.main.getMatrix());
+		
+		BoxGraphic.drawSolidCube();
+		ModelMatrix.main.addTranslation(0,1,0);
+		shader.setModelMatrix(ModelMatrix.main.getMatrix());
+		BoxGraphic.drawSolidCube();
+		ModelMatrix.main.addTranslation(1,0,0);
+		shader.setModelMatrix(ModelMatrix.main.getMatrix());
+		BoxGraphic.drawSolidCube();
+		ModelMatrix.main.popMatrix();
+	}
+	public void shapeZ() {
+		ModelMatrix.main.pushMatrix();
+		shader.setMaterialDiffuse(0, 1.0f, 0.0f, 1);
+		shader.setMaterialSpecular(1, 1, 1, 1);
+		shader.setMaterialShine(50);
+		shader.setModelMatrix(ModelMatrix.main.getMatrix());
+		BoxGraphic.drawSolidCube();
+		ModelMatrix.main.addTranslation(1, 0, 0);
+		shader.setModelMatrix(ModelMatrix.main.getMatrix());
+		
+		BoxGraphic.drawSolidCube();
+		ModelMatrix.main.addTranslation(0,-1,0);
+		shader.setModelMatrix(ModelMatrix.main.getMatrix());
+		BoxGraphic.drawSolidCube();
+		ModelMatrix.main.addTranslation(1,0,0);
+		shader.setModelMatrix(ModelMatrix.main.getMatrix());
+		BoxGraphic.drawSolidCube();
+		ModelMatrix.main.popMatrix();
+	}
 
+	public void shapeL() {
+		ModelMatrix.main.pushMatrix();
+		shader.setMaterialDiffuse(1, 0.0f, 0.0f, 1);
+		shader.setMaterialSpecular(1, 1, 1, 1);
+		shader.setMaterialShine(50);
+		shader.setModelMatrix(ModelMatrix.main.getMatrix());
+		BoxGraphic.drawSolidCube();
+		ModelMatrix.main.addTranslation(1, 0, 0);
+		shader.setModelMatrix(ModelMatrix.main.getMatrix());
+		
+		BoxGraphic.drawSolidCube();
+		ModelMatrix.main.addTranslation(-1,1,0);
+		shader.setModelMatrix(ModelMatrix.main.getMatrix());
+		BoxGraphic.drawSolidCube();
+		ModelMatrix.main.addTranslation(0,1,0);
+		shader.setModelMatrix(ModelMatrix.main.getMatrix());
+		BoxGraphic.drawSolidCube();
+		ModelMatrix.main.popMatrix();
+	}
+	public void shapeJ() {
+		ModelMatrix.main.pushMatrix();
+		shader.setMaterialDiffuse(1, 0.8f, 0.9f, 1);
+		shader.setMaterialSpecular(1, 1, 1, 1);
+		shader.setMaterialShine(50);
+		shader.setModelMatrix(ModelMatrix.main.getMatrix());
+		BoxGraphic.drawSolidCube();
+		ModelMatrix.main.addTranslation(-1, 0, 0);
+		shader.setModelMatrix(ModelMatrix.main.getMatrix());
+		
+		BoxGraphic.drawSolidCube();
+		ModelMatrix.main.addTranslation(1,1,0);
+		shader.setModelMatrix(ModelMatrix.main.getMatrix());
+		BoxGraphic.drawSolidCube();
+		ModelMatrix.main.addTranslation(0,1,0);
+		shader.setModelMatrix(ModelMatrix.main.getMatrix());
+		BoxGraphic.drawSolidCube();
+		ModelMatrix.main.popMatrix();
+	}
+	public void shapeT() {
+		ModelMatrix.main.pushMatrix();
+		shader.setMaterialDiffuse(0.5f, 0.0f, 0.5f, 1);
+		shader.setMaterialSpecular(1, 1, 1, 1);
+		shader.setMaterialShine(50);
+		shader.setModelMatrix(ModelMatrix.main.getMatrix());
+		BoxGraphic.drawSolidCube();
+		ModelMatrix.main.addTranslation(-1, 1, 0);
+		shader.setModelMatrix(ModelMatrix.main.getMatrix());
+		
+		BoxGraphic.drawSolidCube();
+		ModelMatrix.main.addTranslation(1,0,0);
+		shader.setModelMatrix(ModelMatrix.main.getMatrix());
+		BoxGraphic.drawSolidCube();
+		ModelMatrix.main.addTranslation(1,0,0);
+		shader.setModelMatrix(ModelMatrix.main.getMatrix());
+		BoxGraphic.drawSolidCube();
+		ModelMatrix.main.popMatrix();
+	}
 	@Override
 	public void render () {
 		//put the code inside the update and display methods, depending on the nature of the code
