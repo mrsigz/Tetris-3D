@@ -14,7 +14,8 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 	
 	private float angle;
 	private Camera cam;
-	
+	private float dropTime;
+	private float test;
 	private float fov = 90.0f;
 	
 	@Override
@@ -44,6 +45,9 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 
 		cam = new Camera();
 		cam.look(new Point3D(-3f, 0f, 3f), new Point3D(0,3,0), new Vector3D(0,1,0));
+		dropTime = 2;
+		test = 0;
+		
 		
 	}
 
@@ -61,18 +65,20 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		if(Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
 			cam.pitch(-90.0f * deltaTime);
 		}
-		
-		if(Gdx.input.isKeyPressed(Input.Keys.A)) {
-			cam.slide(-3.0f * deltaTime, 0, 0);
+		if(Gdx.input.isKeyJustPressed(Input.Keys.A)) {
+			ModelMatrix.main.addTranslation(-1, 0, 0);
+			//cam.slide(-3.0f * deltaTime, 0, 0);
 		}
-		if(Gdx.input.isKeyPressed(Input.Keys.D)) {
-			cam.slide(3.0f * deltaTime, 0, 0);
+		if(Gdx.input.isKeyJustPressed(Input.Keys.D)) {
+			ModelMatrix.main.addTranslation(1, 0, 0);
+
+			//cam.slide(3.0f * deltaTime, 0, 0);
 		}
-		if(Gdx.input.isKeyPressed(Input.Keys.W)) {
-			cam.slide(0, 0, -3.0f * deltaTime);
+		if(Gdx.input.isKeyJustPressed(Input.Keys.W)) {
+			ModelMatrix.main.addRotationZ(-90);
 		}
-		if(Gdx.input.isKeyPressed(Input.Keys.S)) {
-			cam.slide(0, 0, 3.0f * deltaTime);	
+		if(Gdx.input.isKeyJustPressed(Input.Keys.S)) {
+			ModelMatrix.main.addRotationZ(90);	
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
 			Gdx.graphics.setDisplayMode(500,500,false);
@@ -85,6 +91,8 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		float deltaTime = Gdx.graphics.getDeltaTime();
 		input(deltaTime);	
 		angle += 180.0f * deltaTime;
+		test += deltaTime;
+		
 	}
 	
 	private void display()
@@ -98,7 +106,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		shader.setProjectionMatrix(cam.getProjectionMatrix());
 		shader.setEyePosition(cam.eye.x, cam.eye.y, cam.eye.z, 1.0f);
 		
-		ModelMatrix.main.loadIdentityMatrix();
+		
 		
 		//set world light
 		//float s = (float)Math.sin(angle * Math.PI / 180.0);
@@ -117,9 +125,16 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		//BoxGraphic.drawSolidCube();
 		//SphereGraphic.drawSolidSphere();
 		ModelMatrix.main.popMatrix();*/
+		if(test > dropTime) {
+			drop();
+			test = 0;
+		}
 		shapeT();
 
 		
+	}
+	public void drop() {
+		ModelMatrix.main.addTranslationBaseCoords(0,-1,0);
 	}
 	
 	
