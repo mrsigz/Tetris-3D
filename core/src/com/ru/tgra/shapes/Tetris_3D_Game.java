@@ -65,12 +65,12 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		if(Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
 			cam.pitch(-90.0f * deltaTime);
 		}
-		if(Gdx.input.isKeyJustPressed(Input.Keys.A)) {
-			ModelMatrix.main.addTranslation(-1, 0, 0);
+		if(Gdx.input.isKeyJustPressed(Input.Keys.A) && ModelMatrix.main.getOrigin().x > -5) {
+			ModelMatrix.main.addTranslationBaseCoords(-1, 0, 0);
 			//cam.slide(-3.0f * deltaTime, 0, 0);
 		}
-		if(Gdx.input.isKeyJustPressed(Input.Keys.D)) {
-			ModelMatrix.main.addTranslation(1, 0, 0);
+		if(Gdx.input.isKeyJustPressed(Input.Keys.D) && ModelMatrix.main.getOrigin().x < 5) {
+			ModelMatrix.main.addTranslationBaseCoords(1, 0, 0);
 
 			//cam.slide(3.0f * deltaTime, 0, 0);
 		}
@@ -130,7 +130,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 			test = 0;
 		}
 		shapeT();
-
+		System.out.println(ModelMatrix.main.getOrigin());
 		
 	}
 	public void drop() {
@@ -214,7 +214,6 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		BoxGraphic.drawSolidCube();
 		ModelMatrix.main.popMatrix();
 	}
-
 	public void shapeL() {
 		ModelMatrix.main.pushMatrix();
 		shader.setMaterialDiffuse(1, 0.0f, 0.0f, 1);
