@@ -51,6 +51,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		dropTime = 2;
 		test = 0;
 		getNewShape();
+		//shape = 0;
 		Random rand = new Random();
 		board = new boolean[10][22];
 		/*for(int i = 0; i < 10; i++){
@@ -88,10 +89,10 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 
 			//cam.slide(3.0f * deltaTime, 0, 0);
 		}
-		if(Gdx.input.isKeyJustPressed(Input.Keys.W)) {
+		if(Gdx.input.isKeyJustPressed(Input.Keys.W) && shape != 0) {
 			ModelMatrix.main.addRotationZ(-90);
 		}
-		if(Gdx.input.isKeyJustPressed(Input.Keys.S)) {
+		if(Gdx.input.isKeyJustPressed(Input.Keys.S) && shape != 0) {
 			ModelMatrix.main.addRotationZ(90);	
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
@@ -143,6 +144,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		//SphereGraphic.drawSolidSphere();
 		ModelMatrix.main.popMatrix();*/
 		shapeOnScreen();
+		//shapeO();
 		if(test > dropTime && ModelMatrix.main.getOrigin().y > -20) {
 			drop();
 			checkCollision();
@@ -256,10 +258,10 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 		
 		BoxGraphic.drawSolidCube();
-		ModelMatrix.main.addTranslation(0,1,0);
+		ModelMatrix.main.addTranslation(-1,-1,0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 		BoxGraphic.drawSolidCube();
-		ModelMatrix.main.addTranslation(1,0,0);
+		ModelMatrix.main.addTranslation(-1,0,0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 		BoxGraphic.drawSolidCube();
 		ModelMatrix.main.popMatrix();
@@ -271,11 +273,11 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		shader.setMaterialShine(50);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 		BoxGraphic.drawSolidCube();
-		ModelMatrix.main.addTranslation(1, 0, 0);
+		ModelMatrix.main.addTranslation(-1, 0, 0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 		
 		BoxGraphic.drawSolidCube();
-		ModelMatrix.main.addTranslation(0,-1,0);
+		ModelMatrix.main.addTranslation(1,-1,0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 		BoxGraphic.drawSolidCube();
 		ModelMatrix.main.addTranslation(1,0,0);
@@ -290,14 +292,14 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		shader.setMaterialShine(50);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 		BoxGraphic.drawSolidCube();
-		ModelMatrix.main.addTranslation(1, 0, 0);
+		ModelMatrix.main.addTranslation(0, 1, 0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 		
 		BoxGraphic.drawSolidCube();
-		ModelMatrix.main.addTranslation(-1,1,0);
+		ModelMatrix.main.addTranslation(0,-2,0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 		BoxGraphic.drawSolidCube();
-		ModelMatrix.main.addTranslation(0,1,0);
+		ModelMatrix.main.addTranslation(1,0,0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 		BoxGraphic.drawSolidCube();
 		ModelMatrix.main.popMatrix();
@@ -309,14 +311,14 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		shader.setMaterialShine(50);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 		BoxGraphic.drawSolidCube();
-		ModelMatrix.main.addTranslation(-1, 0, 0);
+		ModelMatrix.main.addTranslation(0, 1, 0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 		
 		BoxGraphic.drawSolidCube();
-		ModelMatrix.main.addTranslation(1,1,0);
+		ModelMatrix.main.addTranslation(0,-2,0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 		BoxGraphic.drawSolidCube();
-		ModelMatrix.main.addTranslation(0,1,0);
+		ModelMatrix.main.addTranslation(-1,0,0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 		BoxGraphic.drawSolidCube();
 		ModelMatrix.main.popMatrix();
@@ -328,14 +330,14 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		shader.setMaterialShine(50);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 		BoxGraphic.drawSolidCube();
-		ModelMatrix.main.addTranslation(-1, 1, 0);
+		ModelMatrix.main.addTranslation(-1, 0, 0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 		
 		BoxGraphic.drawSolidCube();
-		ModelMatrix.main.addTranslation(1,0,0);
+		ModelMatrix.main.addTranslation(2,0,0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 		BoxGraphic.drawSolidCube();
-		ModelMatrix.main.addTranslation(1,0,0);
+		ModelMatrix.main.addTranslation(-1,-1,0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 		BoxGraphic.drawSolidCube();
 		ModelMatrix.main.popMatrix();
