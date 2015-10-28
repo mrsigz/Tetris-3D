@@ -1,6 +1,8 @@
 package com.ru.tgra.shapes;
 
 
+import java.util.Random;
+
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics.DisplayMode;
@@ -17,7 +19,8 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 	private float dropTime;
 	private float test;
 	private float fov = 90.0f;
-	
+	private int shape;
+	private boolean[][] board;
 	@Override
 	public void create () {
 		
@@ -47,8 +50,19 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		cam.look(new Point3D(-3f, 0f, 3f), new Point3D(0,3,0), new Vector3D(0,1,0));
 		dropTime = 2;
 		test = 0;
-		
-		
+		getNewShape();
+		Random rand = new Random();
+		board = new boolean[10][22];
+		/*for(int i = 0; i < 10; i++){
+			for(int j = 0; j <20; j++) {
+				if(rand.nextInt(2) == 0){
+					board[i][j] = true;
+				}
+				else {
+					board[i][j] = false;
+				}
+			}
+		}*/
 	}
 
 	private void input(float deltaTime)
@@ -69,7 +83,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 			ModelMatrix.main.addTranslationBaseCoords(-1, 0, 0);
 			//cam.slide(-3.0f * deltaTime, 0, 0);
 		}
-		if(Gdx.input.isKeyJustPressed(Input.Keys.D) && ModelMatrix.main.getOrigin().x < 5) {
+		if(Gdx.input.isKeyJustPressed(Input.Keys.D) && ModelMatrix.main.getOrigin().x < 4) {
 			ModelMatrix.main.addTranslationBaseCoords(1, 0, 0);
 
 			//cam.slide(3.0f * deltaTime, 0, 0);
@@ -83,6 +97,9 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
 			Gdx.graphics.setDisplayMode(500,500,false);
 			Gdx.app.exit();
+		}
+		if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+			ModelMatrix.main.matrix.put(13, -20);
 		}
 	}
 	
@@ -105,7 +122,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		shader.setViewMatrix(cam.getViewMatrix());
 		shader.setProjectionMatrix(cam.getProjectionMatrix());
 		shader.setEyePosition(cam.eye.x, cam.eye.y, cam.eye.z, 1.0f);
-		
+		fillupBoard();
 		
 		
 		//set world light
@@ -125,18 +142,70 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		//BoxGraphic.drawSolidCube();
 		//SphereGraphic.drawSolidSphere();
 		ModelMatrix.main.popMatrix();*/
-		if(test > dropTime) {
+		shapeOnScreen();
+		if(test > dropTime && ModelMatrix.main.getOrigin().y > -20) {
 			drop();
+			checkCollision();
 			test = 0;
 		}
-		shapeT();
+		if(ModelMatrix.main.getOrigin().y <= -20) {
+			ModelMatrix.main.loadIdentityMatrix();
+			getNewShape();
+			
+		}
 		System.out.println(ModelMatrix.main.getOrigin());
 		
+	}
+	public void fillupBoard() {
+		shader.setMaterialDiffuse(1, 1, 0, 1);
+		for(int i = 0; i < 10; i++) {
+			for(int j = 0; j < 20; j++) {
+				if(board[i][j]) {
+					ModelMatrix.main.pushMatrix();
+					ModelMatrix.main.loadIdentityMatrix();
+					ModelMatrix.main.addTranslation((i-5), -j, 0);
+					shader.setModelMatrix(ModelMatrix.main.getMatrix());
+					BoxGraphic.drawSolidCube();
+					ModelMatrix.main.popMatrix();
+				}
+			}
+		}
+	}
+	public void shapeOnScreen() {
+		switch(shape) {
+		case 0: 
+			shapeO();
+			break;
+		case 1:
+			shapeI();
+			break;
+		case 2:
+			shapeS();
+			break;
+		case 3:
+			shapeZ();
+			break;
+		case 4:
+			shapeL();
+			break;
+		case 5:
+			shapeJ();
+			break;
+		case 6:
+			shapeT();
+			break;
+	}
 	}
 	public void drop() {
 		ModelMatrix.main.addTranslationBaseCoords(0,-1,0);
 	}
-	
+	public void checkCollision() {
+		
+	}
+	public void getNewShape() {
+		Random rand = new Random();
+		shape = rand.nextInt(7);
+	}
 	
 	public void shapeO(){
 		ModelMatrix.main.pushMatrix();
@@ -171,7 +240,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		ModelMatrix.main.addTranslation(0,1,0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 		BoxGraphic.drawSolidCube();
-		ModelMatrix.main.addTranslation(0,1,0);
+		ModelMatrix.main.addTranslation(0,-2,0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 		BoxGraphic.drawSolidCube();
 		ModelMatrix.main.popMatrix();
@@ -272,7 +341,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		ModelMatrix.main.popMatrix();
 	}
 	@Override
-	public void render () {
+	public void render() {
 		//put the code inside the update and display methods, depending on the nature of the code
 		update();
 		display();
