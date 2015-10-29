@@ -12,7 +12,7 @@ public class SphereGraphic {
 	private static FloatBuffer normalBuffer;
 	private static int vertexPointer;
 	private static int normalPointer;
-	private static int verticesPerCircle = 50;
+	
 
 	
 	private static int stacks = 12;
