@@ -4,10 +4,11 @@ import java.nio.FloatBuffer;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 
 public class Shader {
 	
-	//Local variables for program ID's I intend to use
+	//Local variables for program ID's
 	private int renderingProgramID;
 	private int vertexShaderID;
 	private int fragmentShaderID;
@@ -15,6 +16,7 @@ public class Shader {
 	//Local variables for storing the locations of variables in the shader program
 	private int positionLoc;
 	private int normalLoc;
+	private int uvLoc;
 
 	private int modelMatrixLoc;
 	private int viewMatrixLoc;
@@ -23,12 +25,27 @@ public class Shader {
 	private int eyePosLoc;
 	
 	private int globalAmbLoc;
-	//private int colorLoc;
+	
 	private int lightPosLoc;
 	private int lightColorLoc;
+	
+	private int spotDirLoc;
+	private int spotExpLoc;
+	private int constantAttLoc;
+	private int linearAttLoc;
+	private int quadraticAttLoc;
+	
 	private int matDifLoc;
 	private int matSpecLoc;
 	private int matShineLoc;
+	
+	private int difTexLoc;
+	private int specTexLoc;
+	private int useDifTexLoc;
+	private int useSpecTexLoc;
+	
+	public boolean usesDiffuseTexture;
+	public boolean usesSpecularTexture;
 
 	public Shader(){
 		//string variables for holding the shader program code
@@ -66,6 +83,9 @@ public class Shader {
 		//Ask openGL to compile an empty program and return it's ID
 		renderingProgramID = Gdx.gl.glCreateProgram();
 		
+		System.out.println(Gdx.gl.glGetShaderInfoLog(vertexShaderID));
+		System.out.println(Gdx.gl.glGetShaderInfoLog(fragmentShaderID));
+		
 		//Attach the compiled shaders to the empty program ID by the shader ID
 		Gdx.gl.glAttachShader(renderingProgramID, vertexShaderID);
 		Gdx.gl.glAttachShader(renderingProgramID, fragmentShaderID);
@@ -84,6 +104,9 @@ public class Shader {
 
 		normalLoc				= Gdx.gl.glGetAttribLocation(renderingProgramID, "a_normal");
 		Gdx.gl.glEnableVertexAttribArray(normalLoc);
+		
+		uvLoc				= Gdx.gl.glGetAttribLocation(renderingProgramID, "a_uv");
+		Gdx.gl.glEnableVertexAttribArray(uvLoc);
 
 		modelMatrixLoc			= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_modelMatrix");
 		viewMatrixLoc			= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_viewMatrix");
@@ -92,12 +115,24 @@ public class Shader {
 		eyePosLoc				= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_eyeposition");
 
 		globalAmbLoc			= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_globalAmbient");
+		
 		lightPosLoc				= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_lightPosition");
 		lightColorLoc			= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_lightColor");
+		
+		spotDirLoc				= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_spotDirection");
+		spotExpLoc				= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_spotExponent");
+		constantAttLoc			= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_constantAttenuation");
+		linearAttLoc			= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_linearAttenuation");
+		quadraticAttLoc			= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_quadraticAttenuation");
 		
 		matDifLoc				= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_materialDiffuse");
 		matSpecLoc				= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_materialSpecular");	
 		matShineLoc				= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_materialshine");
+		
+		difTexLoc               = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_textureDiffuse");
+		useDifTexLoc            = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_usesDiffuseTexture");
+		specTexLoc              = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_textureSpecular");
+		useSpecTexLoc           = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_usesSpecularTexture");
 		
 		//Tell openGL the ID of the shader program to use
 		Gdx.gl.glUseProgram(renderingProgramID);
@@ -116,6 +151,31 @@ public class Shader {
 	public void setLightPosition(float x, float y, float z, float w){
 		//populate the variable u_lightPosition in the vertex shader with the given values
 		Gdx.gl.glUniform4f(lightPosLoc, x, y, z, w);
+	}
+	
+	public void setSpotDirection(float x, float y, float z, float w){
+		//populate the variable u_lightDirection in the vertex shader with the given values
+		Gdx.gl.glUniform4f(spotDirLoc, x, y, z, w);
+	}
+	
+	public void setSpotExponent(float exp){
+		//populate the variable u_materialshine in the vertex shader with the given values
+		Gdx.gl.glUniform1f(spotExpLoc, exp);
+	}
+	
+	public void setConstantAttenuation(float att){
+		//populate the variable u_materialshine in the vertex shader with the given values
+		Gdx.gl.glUniform1f(constantAttLoc, att);
+	}
+	
+	public void setLinearAttenuation(float att){
+		//populate the variable u_materialshine in the vertex shader with the given values
+		Gdx.gl.glUniform1f(linearAttLoc, att);
+	}
+	
+	public void setQuadraticAttenuation(float att){
+		//populate the variable u_materialshine in the vertex shader with the given values
+		Gdx.gl.glUniform1f(quadraticAttLoc, att);
 	}
 	
 	public void setLightColor(float r, float g, float b, float a){
@@ -138,6 +198,34 @@ public class Shader {
 		Gdx.gl.glUniform1f(matShineLoc, shine);
 	}
 	
+	public void setDiffuseTexture(Texture tex){
+		if(tex == null){
+			Gdx.gl.glUniform1f(useDifTexLoc, 0.0f);
+			usesDiffuseTexture = false;
+		}else{
+			tex.bind(0);
+			Gdx.gl.glUniform1i(difTexLoc, 0);
+			Gdx.gl.glUniform1f(useDifTexLoc, 1.0f);
+			usesDiffuseTexture = true;
+		}
+	}
+
+	public void setSpecularTexture(Texture tex){
+		if(tex == null){
+			Gdx.gl.glUniform1f(useSpecTexLoc, 0.0f);
+			usesSpecularTexture = false;
+		}else{
+			tex.bind(1);
+			Gdx.gl.glUniform1i(specTexLoc, 1);
+			Gdx.gl.glUniform1f(useSpecTexLoc, 1.0f);
+			usesSpecularTexture = true;
+		}
+	}
+	
+	public boolean usesTextures(){
+		return (usesDiffuseTexture||usesSpecularTexture);
+	}
+	
 	public int getVertexPointer(){
 		//return the location of a_position from the vertex shader
 		return positionLoc;
@@ -146,6 +234,11 @@ public class Shader {
 	public int getNormalPointer(){
 		//return the location of a_normal from the vertex shader
 		return normalLoc;
+	}
+	
+	public int getUVPointer(){
+		//return the location of a_normal from the vertex shader
+		return uvLoc;
 	}
 	
 	public void setModelMatrix(FloatBuffer matrix){

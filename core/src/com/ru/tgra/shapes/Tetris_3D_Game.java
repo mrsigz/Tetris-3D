@@ -9,6 +9,7 @@ import com.badlogic.gdx.Graphics.DisplayMode;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
 
 public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor {
 	
@@ -21,19 +22,22 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 	private float fov = 90.0f;
 	private int shape;
 	private boolean[][] board;
+	
+	private Texture tex;
+	private Texture specTex;
 	@Override
 	public void create () {
 		
+		shader = new Shader();
+		
 		DisplayMode disp = Gdx.graphics.getDesktopDisplayMode();
 		Gdx.graphics.setDisplayMode(disp.width, disp.height, true);
-		
-		shader = new Shader();
 		
 		Gdx.input.setInputProcessor(this);
 		
 		angle = 0;
 
-		BoxGraphic.create(shader.getVertexPointer(), shader.getNormalPointer());
+		BoxGraphic.create();
 		SphereGraphic.create(shader.getVertexPointer(), shader.getNormalPointer());
 		SincGraphic.create(shader.getVertexPointer());
 		CoordFrameGraphic.create(shader.getVertexPointer());
@@ -47,7 +51,11 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 
 		cam = new Camera();
-		cam.look(new Point3D(-3f, 0f, 3f), new Point3D(0,3,0), new Vector3D(0,1,0));
+		cam.look(new Point3D(-13f, 0f, 20f), new Point3D(0,3,0), new Vector3D(0,1,0));
+		
+		tex = new Texture(Gdx.files.internal("textures/Frame.png"));
+		specTex = new Texture(Gdx.files.internal("textures/Spec01.png"));
+		
 		dropTime = 2;
 		test = 0;
 		getNewShape();
@@ -129,9 +137,18 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		//set world light
 		//float s = (float)Math.sin(angle * Math.PI / 180.0);
 		//float c = (float)Math.cos(angle * Math.PI / 180.0);
-		shader.setLightColor(1, 1, 1, 1);
-		shader.setLightPosition(1, 1, 1, 1.0f);
-		shader.setGlobalAmbience(1, 1, 1, 1);
+		shader.setLightColor(1.0f, 1.0f, 1.0f, 1.0f);
+		shader.setLightPosition(1.0f, 1.0f, 1.0f, 1.0f);
+		shader.setSpotDirection(1.0f, 0.0f, 1.0f, 0.0f);
+		/* Set light as a spot light shining from the eye to emphasize 3D */
+		//shader.setLightPosition(cam.eye.x, cam.eye.y, cam.eye.z, 1.0f);
+		//shader.setSpotDirection(-cam.getN().x, -cam.getN().y, -cam.getN().z, 0.0f);
+		shader.setSpotExponent(10.0f);
+		shader.setConstantAttenuation(1.0f);
+		shader.setLinearAttenuation(8.0f);
+		shader.setQuadraticAttenuation(1.0f);
+		
+		shader.setGlobalAmbience(0.3f, 0.3f, 0.3f, 1.0f);
 		
 		/*ModelMatrix.main.pushMatrix();
 		shader.setMaterialDiffuse(1, 1, 1, 1);
@@ -140,8 +157,8 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		ModelMatrix.main.addTranslation(1,1, 1);
 		//ModelMatrix.main.addScale(1, 1, 1);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		//BoxGraphic.drawSolidCube();
-		//SphereGraphic.drawSolidSphere();
+		//BoxGraphic.drawSolidCube(shader, null, null);
+		
 		ModelMatrix.main.popMatrix();*/
 		shapeOnScreen();
 		//shapeO();
@@ -167,7 +184,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 					ModelMatrix.main.loadIdentityMatrix();
 					ModelMatrix.main.addTranslation((i-5), -j, 0);
 					shader.setModelMatrix(ModelMatrix.main.getMatrix());
-					BoxGraphic.drawSolidCube();
+					BoxGraphic.drawSolidCube(shader, tex, specTex);
 					ModelMatrix.main.popMatrix();
 				}
 			}
@@ -215,17 +232,17 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		shader.setMaterialSpecular(1, 1, 1, 1);
 		shader.setMaterialShine(50);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube();
+		BoxGraphic.drawSolidCube(shader, tex, specTex);
 		ModelMatrix.main.addTranslation(1, 0, 0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 		
-		BoxGraphic.drawSolidCube();
+		BoxGraphic.drawSolidCube(shader, tex, specTex);
 		ModelMatrix.main.addTranslation(0,1,0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube();
+		BoxGraphic.drawSolidCube(shader, tex, specTex);
 		ModelMatrix.main.addTranslation(-1,0,0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube();
+		BoxGraphic.drawSolidCube(shader, tex, specTex);
 		ModelMatrix.main.popMatrix();
 	}
 	public void shapeI() {
@@ -234,17 +251,17 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		shader.setMaterialSpecular(1, 1, 1, 1);
 		shader.setMaterialShine(50);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube();
+		BoxGraphic.drawSolidCube(shader, tex, specTex);
 		ModelMatrix.main.addTranslation(0, 1, 0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 		
-		BoxGraphic.drawSolidCube();
+		BoxGraphic.drawSolidCube(shader, tex, specTex);
 		ModelMatrix.main.addTranslation(0,1,0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube();
+		BoxGraphic.drawSolidCube(shader, tex, specTex);
 		ModelMatrix.main.addTranslation(0,-2,0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube();
+		BoxGraphic.drawSolidCube(shader, tex, specTex);
 		ModelMatrix.main.popMatrix();
 	}
 	public void shapeS() {
@@ -253,17 +270,17 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		shader.setMaterialSpecular(1, 1, 1, 1);
 		shader.setMaterialShine(50);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube();
+		BoxGraphic.drawSolidCube(shader, tex, specTex);
 		ModelMatrix.main.addTranslation(1, 0, 0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 		
-		BoxGraphic.drawSolidCube();
+		BoxGraphic.drawSolidCube(shader, tex, specTex);
 		ModelMatrix.main.addTranslation(-1,-1,0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube();
+		BoxGraphic.drawSolidCube(shader, tex, specTex);
 		ModelMatrix.main.addTranslation(-1,0,0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube();
+		BoxGraphic.drawSolidCube(shader, tex, specTex);
 		ModelMatrix.main.popMatrix();
 	}
 	public void shapeZ() {
@@ -272,17 +289,17 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		shader.setMaterialSpecular(1, 1, 1, 1);
 		shader.setMaterialShine(50);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube();
+		BoxGraphic.drawSolidCube(shader, tex, specTex);
 		ModelMatrix.main.addTranslation(-1, 0, 0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 		
-		BoxGraphic.drawSolidCube();
+		BoxGraphic.drawSolidCube(shader, tex, specTex);
 		ModelMatrix.main.addTranslation(1,-1,0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube();
+		BoxGraphic.drawSolidCube(shader, tex, specTex);
 		ModelMatrix.main.addTranslation(1,0,0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube();
+		BoxGraphic.drawSolidCube(shader, tex, specTex);
 		ModelMatrix.main.popMatrix();
 	}
 	public void shapeL() {
@@ -291,17 +308,17 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		shader.setMaterialSpecular(1, 1, 1, 1);
 		shader.setMaterialShine(50);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube();
+		BoxGraphic.drawSolidCube(shader, tex, specTex);
 		ModelMatrix.main.addTranslation(0, 1, 0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 		
-		BoxGraphic.drawSolidCube();
+		BoxGraphic.drawSolidCube(shader, tex, specTex);
 		ModelMatrix.main.addTranslation(0,-2,0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube();
+		BoxGraphic.drawSolidCube(shader, tex, specTex);
 		ModelMatrix.main.addTranslation(1,0,0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube();
+		BoxGraphic.drawSolidCube(shader, tex, specTex);
 		ModelMatrix.main.popMatrix();
 	}
 	public void shapeJ() {
@@ -310,17 +327,17 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		shader.setMaterialSpecular(1, 1, 1, 1);
 		shader.setMaterialShine(50);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube();
+		BoxGraphic.drawSolidCube(shader, tex, specTex);
 		ModelMatrix.main.addTranslation(0, 1, 0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 		
-		BoxGraphic.drawSolidCube();
+		BoxGraphic.drawSolidCube(shader, tex, specTex);
 		ModelMatrix.main.addTranslation(0,-2,0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube();
+		BoxGraphic.drawSolidCube(shader, tex, specTex);
 		ModelMatrix.main.addTranslation(-1,0,0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube();
+		BoxGraphic.drawSolidCube(shader, tex, specTex);
 		ModelMatrix.main.popMatrix();
 	}
 	public void shapeT() {
@@ -329,17 +346,17 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		shader.setMaterialSpecular(1, 1, 1, 1);
 		shader.setMaterialShine(50);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube();
+		BoxGraphic.drawSolidCube(shader, tex, specTex);
 		ModelMatrix.main.addTranslation(-1, 0, 0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 		
-		BoxGraphic.drawSolidCube();
+		BoxGraphic.drawSolidCube(shader, tex, specTex);
 		ModelMatrix.main.addTranslation(2,0,0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube();
+		BoxGraphic.drawSolidCube(shader, tex, specTex);
 		ModelMatrix.main.addTranslation(-1,-1,0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		BoxGraphic.drawSolidCube();
+		BoxGraphic.drawSolidCube(shader, tex, specTex);
 		ModelMatrix.main.popMatrix();
 	}
 	@Override
