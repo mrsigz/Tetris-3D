@@ -93,7 +93,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 				}
 			}
 			if(!no) {
-				if(!checkCollision()) {
+				if(!checkLeftCollision()) {
 					ModelMatrix.main.addTranslationBaseCoords(-1, 0, 0);
 				}
 			}
@@ -108,7 +108,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 				}
 			}
 			if(!no) {
-				if(!checkCollision()) {
+				if(!checkRightCollision()) {
 					ModelMatrix.main.addTranslationBaseCoords(1, 0, 0);
 				}
 			}
@@ -249,7 +249,29 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 			int x = (int)position[i][0];
 			int y = (int)position[i][1];
 			//System.out.println("x: " + (x+5) + " y:" + (y+22));
-			if(board[x+5][y+22]){
+			if(board[x+5][y+21]){
+				return true;
+			}
+		}
+		return false;
+	}
+	public boolean checkLeftCollision() {
+		for(int i = 0; i < 4; i++) {
+			int x = (int)position[i][0];
+			int y = (int)position[i][1];
+			//System.out.println("x: " + (x+5) + " y:" + (y+22));
+			if(board[x+4][y+21]){
+				return true;
+			}
+		}
+		return false;
+	}
+	public boolean checkRightCollision() {
+		for(int i = 0; i < 4; i++) {
+			int x = (int)position[i][0];
+			int y = (int)position[i][1];
+			//System.out.println("x: " + (x+5) + " y:" + (y+22));
+			if(board[x+6][y+21]){
 				return true;
 			}
 		}
@@ -260,7 +282,9 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 			int x = (int)position[i][0];
 			int y = (int)position[i][1];
 			board[x+5][y+22] = true;
-			color[x+5][y+22] = shapeColor; 
+			color[x+5][y+22][0] = shapeColor[0];
+			color[x+5][y+22][1] = shapeColor[1];
+			color[x+5][y+22][2] = shapeColor[2];
 		}
 	}
 	public void getNewShape() {
