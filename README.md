@@ -1,5 +1,5 @@
 # Tetris-3D
-An exercise in openGL
+An exercise in openGL using LWJGL
 
 ## Camera Control:
 * UP Arrow sets field of view to looking on game from above.
