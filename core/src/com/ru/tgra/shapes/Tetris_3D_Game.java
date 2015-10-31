@@ -184,7 +184,6 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		
 		shader.setGlobalAmbience(0.3f, 0.3f, 0.3f, 1.0f);
 		
-		ModelMatrix.main.popMatrix();
 		shapeOnScreen();
 		//shapeO();
 		if(test > dropTime && ModelMatrix.main.getOrigin().y > -20) {
