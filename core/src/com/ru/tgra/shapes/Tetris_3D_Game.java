@@ -26,10 +26,15 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 	
 	private Texture tex;
 	private Texture specTex;
+	private Texture skyBoxTex;
+	private SkyBox skyBox;;
 
 	private float[][][] color;
 	private float[] shapeColor;
 	private float[][] position;
+	
+	boolean move = false;
+	float targetX = 0.0f, targetY = 0.0f, targetFOV = 0.0f;
 
 	@Override
 	public void create () {
@@ -37,13 +42,14 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		shader = new Shader();
 		
 		DisplayMode disp = Gdx.graphics.getDesktopDisplayMode();
-		//Gdx.graphics.setDisplayMode(disp.width, disp.height, true);
+		Gdx.graphics.setDisplayMode(disp.width, disp.height, true);
 		
 		Gdx.input.setInputProcessor(this);
 		
 		angle = 0;
 
 		BoxGraphic.create();
+		SkyBox.create();
 		SphereGraphic.create(shader.getVertexPointer(), shader.getNormalPointer());
 		SincGraphic.create(shader.getVertexPointer());
 		CoordFrameGraphic.create(shader.getVertexPointer());
@@ -57,10 +63,12 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 
 		cam = new Camera();
-		cam.look(new Point3D(-13f, 0f, 20f), new Point3D(0,3,0), new Vector3D(0,1,0));
+		cam.look(new Point3D(0.0f, -13f, 16f), new Point3D(0,-8,0), new Vector3D(0,1,0));
 		
 		tex = new Texture(Gdx.files.internal("textures/Frame.png"));
 		specTex = new Texture(Gdx.files.internal("textures/Spec01.png"));
+		skyBoxTex = new Texture("textures/milkyWay.jpg");
+		skyBox = new SkyBox(skyBoxTex);
 		
 		dropTime = 2;
 
@@ -83,17 +91,71 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 
 	private void input(float deltaTime)
 	{
-		if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-			cam.rotate(90.0f * deltaTime);
+		if(Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
+			//cam.rotate(90.0f * deltaTime);
+			move = true;
+			targetX = -15.0f;
+			targetY = -10.0f;
+			targetFOV = 70.0f;
 		}
-		if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-			cam.rotate(-90.0f * deltaTime);
+		if(Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
+			//cam.rotate(-90.0f * deltaTime);
+			move = true;
+			targetX = 15.0f;
+			targetY = -10.0f;
+			targetFOV = 70.0f;
 		}
-		if(Gdx.input.isKeyPressed(Input.Keys.UP)) {
-			cam.pitch(90.0f * deltaTime);
+		if(Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+			//cam.pitch(90.0f * deltaTime);
+			move = true;
+			targetX = 0.0f;
+			targetY = 13.0f;
+			targetFOV = 70.0f;
 		}
-		if(Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-			cam.pitch(-90.0f * deltaTime);
+		if(Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
+			move = true;
+			targetX = 0.0f;
+			targetY = -13.0f;
+			targetFOV = 90.0f;
+		}
+		if(move){
+			if(fov < targetFOV){
+				fov += 90.0f * deltaTime;
+				if(fov > targetFOV){
+					fov = targetFOV;
+				}
+			}else if(fov > targetFOV){
+				fov -= 90.0f * deltaTime;
+				if(fov < targetFOV){
+					fov = targetFOV;
+				}
+			}
+			if(cam.eye.x < targetX){
+				cam.eye.x += 90.0f * deltaTime;
+				if(cam.eye.x > targetX){
+					cam.eye.x = targetX;
+				}
+			}else if(cam.eye.x > targetX){
+				cam.eye.x -= 90.0f * deltaTime;
+				if(cam.eye.x < targetX){
+					cam.eye.x = targetX;
+				}
+			}
+			if(cam.eye.y < targetY){
+				cam.eye.y += 90.0f * deltaTime;
+				if(cam.eye.y > targetY){
+					cam.eye.y = targetY;
+				}
+			}else if(cam.eye.y > targetY){
+				cam.eye.y -= 90.0f * deltaTime;
+				if(cam.eye.y < targetY){
+					cam.eye.y = targetY;
+				}
+			}
+			if(fov == targetFOV && cam.eye.x == targetX && cam.eye.y == targetY){
+				move = false;
+			}
+			cam.look(new Point3D(cam.eye.x, cam.eye.y, 16f), new Point3D(0,-8,0), new Vector3D(0,1,0));	
 		}
 		if(Gdx.input.isKeyJustPressed(Input.Keys.A)) {
 			boolean no = false;
@@ -168,12 +230,13 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		fillupBoard();
 		
 		
+		
 		//set world light
 		//float s = (float)Math.sin(angle * Math.PI / 180.0);
 		//float c = (float)Math.cos(angle * Math.PI / 180.0);
 		shader.setLightColor(1.0f, 1.0f, 1.0f, 1.0f);
 		shader.setLightPosition(1.0f, 1.0f, 1.0f, 1.0f);
-		shader.setSpotDirection(1.0f, 0.0f, 1.0f, 0.0f);
+		shader.setSpotDirection(1.0f, 1.0f, 1.0f, 0.0f);
 		/* Set light as a spot light shining from the eye to emphasize 3D */
 		//shader.setLightPosition(cam.eye.x, cam.eye.y, cam.eye.z, 1.0f);
 		//shader.setSpotDirection(-cam.getN().x, -cam.getN().y, -cam.getN().z, 0.0f);
@@ -184,6 +247,18 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		
 		shader.setGlobalAmbience(0.3f, 0.3f, 0.3f, 1.0f);
 		
+		/* Skybox */
+		/*
+		ModelMatrix.main.pushMatrix();
+		ModelMatrix.main.loadIdentityMatrix();
+		ModelMatrix.main.addScale(200, 200, 0);
+		shader.setMaterialDiffuse(1.0f, 1.0f, 1.0f, 1.0f);
+		shader.setMaterialSpecular(1.0f, 1.0f, 1.0f, 1.0f);
+		shader.setMaterialShine(200.0f);
+		shader.setModelMatrix(ModelMatrix.main.getMatrix());
+		skyBox.drawSkyBox(shader);
+		ModelMatrix.main.popMatrix();
+		*/
 		shapeOnScreen();
 		//shapeO();
 		if(test > dropTime && ModelMatrix.main.getOrigin().y > -20) {

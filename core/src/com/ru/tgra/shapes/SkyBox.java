@@ -8,13 +8,18 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.BufferUtils;
 
-public class BoxGraphic {
-
+public class SkyBox {
+	
+	static Texture tex;
 	private static FloatBuffer vertexBuffer;
 	private static FloatBuffer normalBuffer;
 	private static FloatBuffer uvBuffer;
 	private static ShortBuffer indexBuffer;
 
+	public SkyBox(Texture texture){
+		tex = texture;
+	}
+	
 	public static void create() {
 		//VERTEX ARRAY IS FILLED HERE
 		float[] vertexArray = {-0.5f, -0.5f, -0.5f,
@@ -77,26 +82,31 @@ public class BoxGraphic {
 		normalBuffer.rewind();
 		
 		//UV coordinate array is set here
-		float[] uvArray = {0.0f, 0.0f,
-						1.0f, 0.0f,
-						1.0f, 1.0f,
-						0.0f, 1.0f,
+		float[] uvArray = {0.25f, 0.333f,
+						0.5f, 0.333f,
+						0.5f, 0.666f,
+						0.25f, 0.666f,
+					
 						0.0f, 0.0f,
 						1.0f, 0.0f,
 						1.0f, 1.0f,
 						0.0f, 1.0f,
+						
 						0.0f, 0.0f,
 						1.0f, 0.0f,
 						1.0f, 1.0f,
 						0.0f, 1.0f,
+						
 						0.0f, 0.0f,
 						1.0f, 0.0f,
 						1.0f, 1.0f,
 						0.0f, 1.0f,
+						
 						0.0f, 0.0f,
 						1.0f, 0.0f,
 						1.0f, 1.0f,
 						0.0f, 1.0f,
+						
 						0.0f, 0.0f,
 						1.0f, 0.0f,
 						1.0f, 1.0f,
@@ -118,9 +128,9 @@ public class BoxGraphic {
 		indexBuffer.rewind();
 	}
 
-	public static void drawSolidCube(Shader shader, Texture diffuseTexture, Texture specularTexture) {
-		shader.setDiffuseTexture(diffuseTexture);
-		shader.setSpecularTexture(specularTexture);
+	public void drawSkyBox(Shader shader) {
+		shader.setDiffuseTexture(tex);
+		shader.setSpecularTexture(null);
 	
 		Gdx.gl.glVertexAttribPointer(shader.getVertexPointer(), 3, GL20.GL_FLOAT, false, 0, vertexBuffer);
 		Gdx.gl.glVertexAttribPointer(shader.getNormalPointer(), 3, GL20.GL_FLOAT, false, 0, normalBuffer);
@@ -128,18 +138,4 @@ public class BoxGraphic {
 
 		Gdx.gl.glDrawElements(GL20.GL_TRIANGLES, 36, GL20.GL_UNSIGNED_SHORT, indexBuffer);
 	}
-
-	/*public static void drawOutlineCube(Shader shader, Texture diffuseTexture, Texture specularTexture) {
-
-		shader.setDiffuseTexture(diffuseTexture);
-		shader.setSpecularTexture(specularTexture);
-
-		Gdx.gl.glVertexAttribPointer(shader.getVertexPointer(), 3, GL20.GL_FLOAT, false, 0, vertexBuffer);
-		Gdx.gl.glVertexAttribPointer(shader.getNormalPointer(), 3, GL20.GL_FLOAT, false, 0, normalBuffer);
-		Gdx.gl.glVertexAttribPointer(shader.getUVPointer(), 2, GL20.GL_FLOAT, false, 0, uvBuffer);
-
-		Gdx.gl.glDrawElements(GL20.GL_LINE_LOOP, 36, GL20.GL_UNSIGNED_SHORT, indexBuffer);
-
-	}*/
-
 }

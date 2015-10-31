@@ -160,19 +160,6 @@ public class Camera {
 		orthographic = true;
 	}
 	
-
-	/* Add circle to camera class for collision detection */
-	/*public void draw() {
-		ModelMatrix.main.pushMatrix();
-		//set circle to follow eye
-		ModelMatrix.main.addTranslation(eye.x, eye.y, eye.z);
-		//scale circle to be within camera culling
-		ModelMatrix.main.addScale(near, near, near);
-		ModelMatrix.main.setShaderMatrix();
-		SphereGraphic.drawOutlineSphere();
-		ModelMatrix.main.popMatrix();	
-	}*/
-	
 	public FloatBuffer getViewMatrix(){
 		float[] pm = new float[16];
 		Vector3D minusEye = new Vector3D(-eye.x, -eye.y,-eye.z);
