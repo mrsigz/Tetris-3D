@@ -21,14 +21,16 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 	private float test;
 	private float fov = 90.0f;
 	private int shape;
-	private int rotation = 0;
 	private boolean[][] board;
+	private int lastRotation;
 	
 	private Texture tex;
 	private Texture specTex;
 	private Texture skyBoxTex;
 	private SkyBox skyBox;;
 
+
+	private boolean spaceOn;
 	private float[][][] color;
 	private float[] shapeColor;
 	private float[][] position;
@@ -74,10 +76,11 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 
 		test = 0;
 		getNewShape();
+		spaceOn = true;
 		//shape = 2;
-		board = new boolean[10][25];
+		board = new boolean[14][25];
 		position = new float[4][2];
-		color = new float[10][25 ][3];
+		color = new float[14][25][3];
 		shapeColor = new float[3];
 		for(int i = 0; i < 10; i++){
 			for(int j = 0; j <22; j++) {
@@ -158,6 +161,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 			cam.look(new Point3D(cam.eye.x, cam.eye.y, 16f), new Point3D(0,-8,0), new Vector3D(0,1,0));	
 		}
 		if(Gdx.input.isKeyJustPressed(Input.Keys.A)) {
+			
 			boolean no = false;
 			for(int i = 0; i < 4; i++) {
 				if(position[i][0] <= -5) {
@@ -189,19 +193,27 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		}
 		if(Gdx.input.isKeyJustPressed(Input.Keys.W) && shape != 0) {
 			ModelMatrix.main.addRotationZ(-90);
-			rotation= (rotation - 90) % 360;
-			//System.out.println(rotation);
+			lastRotation = 90;
+			if(checkCollision() || checkLeftCollision() || checkRightCollision())
+			{
+				ModelMatrix.main.addRotationZ(lastRotation);
+			}
+			
 		}
 		if(Gdx.input.isKeyJustPressed(Input.Keys.S) && shape != 0) {
 			ModelMatrix.main.addRotationZ(90);
-			rotation = (rotation + 90) % 360;
+			lastRotation = -90;
+			if(checkCollision() || checkLeftCollision() || checkRightCollision())
+			{
+				ModelMatrix.main.addRotationZ(lastRotation);
+			}
 			//System.out.println(rotation);
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
 			Gdx.graphics.setDisplayMode(500,500,false);
 			Gdx.app.exit();
 		}
-		if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+		if(Gdx.input.isKeyPressed(Input.Keys.SPACE) && spaceOn) {
 			if(!checkCollision()) {
 				drop();
 			}
@@ -246,6 +258,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		shader.setQuadraticAttenuation(1.0f);
 		
 		shader.setGlobalAmbience(0.3f, 0.3f, 0.3f, 1.0f);
+
 		
 		/* Skybox */
 		/*
@@ -259,38 +272,49 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		skyBox.drawSkyBox(shader);
 		ModelMatrix.main.popMatrix();
 		*/
+		
 		shapeOnScreen();
 		//shapeO();
-		if(test > dropTime && ModelMatrix.main.getOrigin().y > -20) {
-			if(!checkCollision()) {
-				drop();
-			} else {
-				stickShapeOnBoard();
-				ModelMatrix.main.loadIdentityMatrix();
-				getNewShape();
-			}
-			test = 0;
-		}
 		for(int i = 0; i < 4; i++) {
 			if(position[i][1] <= -20) {
-				stickShapeOnBoard();
-				ModelMatrix.main.loadIdentityMatrix();
-				getNewShape();
+				spaceOn = false;
+				if(test > dropTime) {
+					stickShapeOnBoard();
+					ModelMatrix.main.loadIdentityMatrix();
+					getNewShape();
+					test = 0;
+					spaceOn = true;
+					break;
+				}
 			}
 		}
+		for(int i = 0; i < 4; i++){
+			if(test > dropTime && position[i][1] > -20) {
+				if(!checkCollision()) {
+					drop();
+				} else {
+					stickShapeOnBoard();
+					ModelMatrix.main.loadIdentityMatrix();
+					getNewShape();
+				}
+				test = 0;
+				break;
+			}
+		}
+		
 		
 		
 		
 	}
 	public void fillupBoard() {
 		
-		for(int i = 0; i < 10; i++) {
+		for(int i = 1; i < 11; i++) {
 			for(int j = 0; j < 22; j++) {
 				if(board[i][j]) {
 					shader.setMaterialDiffuse(color[i][j][0], color[i][j][1], color[i][j][2], 1);
 					ModelMatrix.main.pushMatrix();
 					ModelMatrix.main.loadIdentityMatrix();
-					ModelMatrix.main.addTranslation((i-5), j-22, 0);
+					ModelMatrix.main.addTranslation((i-6), j-22, 0);
 					shader.setModelMatrix(ModelMatrix.main.getMatrix());
 					BoxGraphic.drawSolidCube(shader, tex, specTex);
 					ModelMatrix.main.popMatrix();
@@ -325,33 +349,9 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 	}
 	public void drop() {
 		ModelMatrix.main.addTranslationBaseCoords(0,-1,0);
-		for(int i = 0; i < 4; i++){
-			//System.out.println("i:" + i + ", x: " + (int)position[i][0] + ", y:" + (int)position[i][1]);
-		}
+		test = 0;
 	}
 	public boolean checkCollision() {
-		for(int i = 0; i < 4; i++) {
-			int x = (int)position[i][0];
-			int y = (int)position[i][1];
-			//System.out.println("x: " + (x+5) + " y:" + (y+22));
-			if(board[x+5][y+21]){
-				return true;
-			}
-		}
-		return false;
-	}
-	public boolean checkLeftCollision() {
-		for(int i = 0; i < 4; i++) {
-			int x = (int)position[i][0];
-			int y = (int)position[i][1];
-			//System.out.println("x: " + (x+5) + " y:" + (y+22));
-			if(board[x+4][y+21]){
-				return true;
-			}
-		}
-		return false;
-	}
-	public boolean checkRightCollision() {
 		for(int i = 0; i < 4; i++) {
 			int x = (int)position[i][0];
 			int y = (int)position[i][1];
@@ -362,20 +362,41 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		}
 		return false;
 	}
+	public boolean checkLeftCollision() {
+		for(int i = 0; i < 4; i++) {
+			int x = (int)position[i][0];
+			int y = (int)position[i][1];
+			//System.out.println("x: " + (x+5) + " y:" + (y+22));
+			if(board[x+5][y+22]){
+				return true;
+			}
+		}
+		return false;
+	}
+	public boolean checkRightCollision() {
+		for(int i = 0; i < 4; i++) {
+			int x = (int)position[i][0];
+			int y = (int)position[i][1];
+			//System.out.println("x: " + (x+5) + " y:" + (y+22));
+			if(board[x+7][y+22]){
+				return true;
+			}
+		}
+		return false;
+	}
 	public void stickShapeOnBoard() {
 		for(int i = 0; i < 4; i++){
 			int x = (int)position[i][0];
 			int y = (int)position[i][1];
-			board[x+5][y+22] = true;
-			color[x+5][y+22][0] = shapeColor[0];
-			color[x+5][y+22][1] = shapeColor[1];
-			color[x+5][y+22][2] = shapeColor[2];
+			board[x+6][y+22] = true;
+			color[x+6][y+22][0] = shapeColor[0];
+			color[x+6][y+22][1] = shapeColor[1];
+			color[x+6][y+22][2] = shapeColor[2];
 		}
 	}
 	public void getNewShape() {
 		Random rand = new Random();
 		shape = rand.nextInt(7);
-		rotation = 0;
 	}
 	
 	public void shapeO(){
@@ -433,7 +454,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		position[2][0] = ModelMatrix.main.getOrigin().x;
 		position[2][1] = ModelMatrix.main.getOrigin().y;
 		BoxGraphic.drawSolidCube(shader, tex, specTex);
-		ModelMatrix.main.addTranslation(0,-2,0);
+		ModelMatrix.main.addTranslation(0,-3,0);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 		position[3][0] = ModelMatrix.main.getOrigin().x;
 		position[3][1] = ModelMatrix.main.getOrigin().y;
