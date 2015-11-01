@@ -27,8 +27,6 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 	private Texture tex;
 	private Texture specTex;
 	private Texture skyBoxTex;
-	private SkyBox skyBox;;
-
 
 	private boolean spaceOn;
 	private float[][][] color;
@@ -51,8 +49,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		angle = 0;
 
 		BoxGraphic.create();
-		SkyBox.create();
-		SphereGraphic.create(shader.getVertexPointer(), shader.getNormalPointer());
+		SphereGraphic.create();
 		SincGraphic.create(shader.getVertexPointer());
 		CoordFrameGraphic.create(shader.getVertexPointer());
 
@@ -69,8 +66,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		
 		tex = new Texture(Gdx.files.internal("textures/Frame.png"));
 		specTex = new Texture(Gdx.files.internal("textures/Spec01.png"));
-		skyBoxTex = new Texture("textures/milkyWay.jpg");
-		skyBox = new SkyBox(skyBoxTex);
+		skyBoxTex = new Texture("textures/starSkyBox.png");
 		
 		dropTime = 2;
 
@@ -241,37 +237,32 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		shader.setEyePosition(cam.eye.x, cam.eye.y, cam.eye.z, 1.0f);
 		fillupBoard();
 		
-		
-		
 		//set world light
 		//float s = (float)Math.sin(angle * Math.PI / 180.0);
 		//float c = (float)Math.cos(angle * Math.PI / 180.0);
 		shader.setLightColor(1.0f, 1.0f, 1.0f, 1.0f);
-		shader.setLightPosition(1.0f, 1.0f, 1.0f, 1.0f);
-		shader.setSpotDirection(1.0f, 1.0f, 1.0f, 0.0f);
-		/* Set light as a spot light shining from the eye to emphasize 3D */
-		//shader.setLightPosition(cam.eye.x, cam.eye.y, cam.eye.z, 1.0f);
-		//shader.setSpotDirection(-cam.getN().x, -cam.getN().y, -cam.getN().z, 0.0f);
+		shader.setLightPosition(-10.0f, -10.0f, 16.0f, 1.0f);
+		shader.setSpotDirection(10.0f, 10.0f, 16.0f, 0.0f);
 		shader.setSpotExponent(10.0f);
-		shader.setConstantAttenuation(1.0f);
-		shader.setLinearAttenuation(8.0f);
-		shader.setQuadraticAttenuation(1.0f);
+		shader.setConstantAttenuation(1.3f);
+		shader.setLinearAttenuation(0.0f);
+		shader.setQuadraticAttenuation(0.0f);
 		
 		shader.setGlobalAmbience(0.3f, 0.3f, 0.3f, 1.0f);
-
 		
-		/* Skybox */
-		/*
 		ModelMatrix.main.pushMatrix();
 		ModelMatrix.main.loadIdentityMatrix();
-		ModelMatrix.main.addScale(200, 200, 0);
+		
+		/* Skybox */
 		shader.setMaterialDiffuse(1.0f, 1.0f, 1.0f, 1.0f);
 		shader.setMaterialSpecular(1.0f, 1.0f, 1.0f, 1.0f);
 		shader.setMaterialShine(200.0f);
+		shader.setMaterialEmission(0.0f, 0.0f, 0.0f, 1.0f);
+		ModelMatrix.main.addScale(100.0f, 100.0f, 100.0f);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		skyBox.drawSkyBox(shader);
+		//BoxGraphic.drawSolidCube(shader, tex, specTex);
+		SphereGraphic.drawSolidSphere(shader, skyBoxTex, skyBoxTex);
 		ModelMatrix.main.popMatrix();
-		*/
 		
 		shapeOnScreen();
 		//shapeO();
@@ -315,6 +306,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 					ModelMatrix.main.pushMatrix();
 					ModelMatrix.main.loadIdentityMatrix();
 					ModelMatrix.main.addTranslation((i-6), j-22, 0);
+					shader.setMaterialEmission(0,0,0,1);
 					shader.setModelMatrix(ModelMatrix.main.getMatrix());
 					BoxGraphic.drawSolidCube(shader, tex, specTex);
 					ModelMatrix.main.popMatrix();
@@ -407,6 +399,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		shader.setMaterialDiffuse(1, 1, 0, 1);
 		shader.setMaterialSpecular(1, 1, 1, 1);
 		shader.setMaterialShine(50);
+		shader.setMaterialEmission(0,0,0,1);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 
 		position[0][0] = ModelMatrix.main.getOrigin().x;
@@ -439,6 +432,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		shader.setMaterialDiffuse(0.2f, 0.2f, 1, 1);
 		shader.setMaterialSpecular(1, 1, 1, 1);
 		shader.setMaterialShine(50);
+		shader.setMaterialEmission(0,0,0,1);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 
 		position[0][0] = ModelMatrix.main.getOrigin().x;
@@ -470,6 +464,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		shader.setMaterialDiffuse(1, 0.5f, 0.0f, 1);
 		shader.setMaterialSpecular(1, 1, 1, 1);
 		shader.setMaterialShine(50);
+		shader.setMaterialEmission(0,0,0,1);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 
 		position[0][0] = ModelMatrix.main.getOrigin().x;
@@ -501,6 +496,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		shader.setMaterialDiffuse(0, 1.0f, 0.0f, 1);
 		shader.setMaterialSpecular(1, 1, 1, 1);
 		shader.setMaterialShine(50);
+		shader.setMaterialEmission(0,0,0,1);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 
 		position[0][0] = ModelMatrix.main.getOrigin().x;
@@ -532,6 +528,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		shader.setMaterialDiffuse(1, 0.0f, 0.0f, 1);
 		shader.setMaterialSpecular(1, 1, 1, 1);
 		shader.setMaterialShine(50);
+		shader.setMaterialEmission(0,0,0,1);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 
 		position[0][0] = ModelMatrix.main.getOrigin().x;
@@ -563,6 +560,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		shader.setMaterialDiffuse(1, 0.8f, 0.9f, 1);
 		shader.setMaterialSpecular(1, 1, 1, 1);
 		shader.setMaterialShine(50);
+		shader.setMaterialEmission(0,0,0,1);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 
 		position[0][0] = ModelMatrix.main.getOrigin().x;
@@ -594,6 +592,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		shader.setMaterialDiffuse(0.5f, 0.0f, 0.5f, 1);
 		shader.setMaterialSpecular(1, 1, 1, 1);
 		shader.setMaterialShine(50);
+		shader.setMaterialEmission(0,0,0,1);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 
 		position[0][0] = ModelMatrix.main.getOrigin().x;

@@ -25,6 +25,7 @@ uniform float u_quadraticAttenuation;
 uniform float u_materialshine;
 uniform vec4 u_materialDiffuse;
 uniform vec4 u_materialSpecular;
+uniform vec4 u_materialEmission;
 
 varying vec2 v_uv;
 varying vec4 v_normal;
@@ -60,7 +61,7 @@ void main()
 	
 	vec4 diffuseColor = lambert * u_lightColor * materialDiffuse;
 	vec4 specularColor = pow(phong, u_materialshine) * u_lightColor * materialSpecular;
-	vec4 ambience = u_globalAmbient * materialDiffuse;
+	vec4 ambience = u_globalAmbient * materialDiffuse + u_materialEmission;
 	
 	float attenuation = 1.0;
 	if(u_spotExponent != 0.0){

@@ -38,6 +38,7 @@ public class Shader {
 	private int matDifLoc;
 	private int matSpecLoc;
 	private int matShineLoc;
+	private int matEmissionLoc;
 	
 	private int difTexLoc;
 	private int specTexLoc;
@@ -128,6 +129,7 @@ public class Shader {
 		matDifLoc				= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_materialDiffuse");
 		matSpecLoc				= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_materialSpecular");	
 		matShineLoc				= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_materialshine");
+		matEmissionLoc			= Gdx.gl.glGetUniformLocation(renderingProgramID, "u_materialEmission");
 		
 		difTexLoc               = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_textureDiffuse");
 		useDifTexLoc            = Gdx.gl.glGetUniformLocation(renderingProgramID, "u_usesDiffuseTexture");
@@ -198,6 +200,11 @@ public class Shader {
 		Gdx.gl.glUniform1f(matShineLoc, shine);
 	}
 	
+	public void setMaterialEmission(float x, float y, float z, float w){
+		//populate the variable u_eyePosition in the vertex shader with the given values
+		Gdx.gl.glUniform4f(matEmissionLoc, x, y, z, w);
+	}
+	
 	public void setDiffuseTexture(Texture tex){
 		if(tex == null){
 			Gdx.gl.glUniform1f(useDifTexLoc, 0.0f);
@@ -207,6 +214,9 @@ public class Shader {
 			Gdx.gl.glUniform1i(difTexLoc, 0);
 			Gdx.gl.glUniform1f(useDifTexLoc, 1.0f);
 			usesDiffuseTexture = true;
+			
+			Gdx.gl.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_S, GL20.GL_REPEAT);
+			Gdx.gl.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_T, GL20.GL_REPEAT);
 		}
 	}
 
@@ -219,6 +229,9 @@ public class Shader {
 			Gdx.gl.glUniform1i(specTexLoc, 1);
 			Gdx.gl.glUniform1f(useSpecTexLoc, 1.0f);
 			usesSpecularTexture = true;
+
+			Gdx.gl.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_S, GL20.GL_REPEAT);
+			Gdx.gl.glTexParameteri(GL20.GL_TEXTURE_2D, GL20.GL_TEXTURE_WRAP_T, GL20.GL_REPEAT);
 		}
 	}
 	
