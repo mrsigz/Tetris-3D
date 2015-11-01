@@ -27,7 +27,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 	private Texture tex;
 	private Texture specTex;
 	private Texture skyBoxTex;
-	private SkyBox skyBox;;
+	private SkyBox skyBox;
 
 
 	private boolean spaceOn;
@@ -273,6 +273,13 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		ModelMatrix.main.popMatrix();
 		*/
 		
+		
+		for(int i = 0; i < 4; i++){
+			if(position[i][0] > 4 || position[i][0] < -5) {
+				ModelMatrix.main.addRotationZ(lastRotation);
+				break;
+			}
+		}
 		shapeOnScreen();
 		//shapeO();
 		for(int i = 0; i < 4; i++) {
