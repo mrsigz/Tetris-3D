@@ -268,6 +268,13 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		SphereGraphic.drawSolidSphere(shader, skyBoxTex, skyBoxTex);
 		ModelMatrix.main.popMatrix();
 
+		
+		for(int i = 0; i < 4; i++){
+			if(position[i][0] > 4 || position[i][0] < -5) {
+				ModelMatrix.main.addRotationZ(lastRotation);
+				break;
+			}
+		}
 		shapeOnScreen();
 		//shapeO();
 		for(int i = 0; i < 4; i++) {
