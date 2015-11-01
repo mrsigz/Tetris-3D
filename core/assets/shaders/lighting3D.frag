@@ -47,7 +47,7 @@ void main()
 	
 	vec4 materialSpecular;
 	if(u_usesSpecularTexture == 1.0){
-		materialSpecular = texture2D(u_specularTexture, v_uv) * u_materialSpecular;
+		materialSpecular = texture2D(u_specularTexture, v_uv);
 	}
 	else{
 		materialSpecular = u_materialSpecular;
