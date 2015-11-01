@@ -35,7 +35,6 @@ varying vec4 v_h;
 void main()
 {
 	/* Lighting */
-	//for each light
 	
 	vec4 materialDiffuse;
 	if(u_usesDiffuseTexture == 1.0){
@@ -71,8 +70,6 @@ void main()
 	}
 
 	attenuation *= 1.0f /(u_constantAttenuation + length_s * u_linearAttenuation + pow(length_s, 2.0f) * u_quadraticAttenuation);
-	
-	//end for each
 	
 	gl_FragColor = ambience + attenuation * (diffuseColor + specularColor);
 }

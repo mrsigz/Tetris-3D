@@ -74,8 +74,8 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		cam.look(new Point3D(0.0f, -13f, 16f), new Point3D(0,-8,0), new Vector3D(0,1,0));
 		
 		tex = new Texture(Gdx.files.internal("textures/Frame.png"));
-		//specTex = new Texture(Gdx.files.internal("textures/metalSpecTex.png"));
-		specTex = null;
+		specTex = new Texture(Gdx.files.internal("textures/metalSpecTex.png"));
+		//specTex = null;
 		skyBoxTex = new Texture("textures/starSkyBox.png");
 		borgCube = new Texture("textures/borgCube.jpg");
 		particleTex = new Texture("textures/GreyGradiant01.png");
@@ -103,25 +103,25 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 
 	private void input(float deltaTime)
 	{
-		if(Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
+		if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_1)) {
 			move = true;
 			targetX = -15.0f;
 			targetY = -10.0f;
 			targetFOV = 70.0f;
 		}
-		if(Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
+		if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_2)) {
 			move = true;
 			targetX = 15.0f;
 			targetY = -10.0f;
 			targetFOV = 70.0f;
 		}
-		if(Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
+		if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_3)) {
 			move = true;
 			targetX = 0.0f;
 			targetY = 13.0f;
 			targetFOV = 70.0f;
 		}
-		if(Gdx.input.isKeyJustPressed(Input.Keys.DOWN)) {
+		if(Gdx.input.isKeyJustPressed(Input.Keys.NUM_4)) {
 			move = true;
 			targetX = 0.0f;
 			targetY = -13.0f;
@@ -166,7 +166,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 			}
 			cam.look(new Point3D(cam.eye.x, cam.eye.y, 16f), new Point3D(0,-8,0), new Vector3D(0,1,0));	
 		}
-		if(Gdx.input.isKeyJustPressed(Input.Keys.A)) {
+		if(Gdx.input.isKeyJustPressed(Input.Keys.A) || Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
 			
 			boolean no = false;
 			for(int i = 0; i < 4; i++) {
@@ -182,7 +182,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 			}
 			//cam.slide(-3.0f * deltaTime, 0, 0);
 		}
-		if(Gdx.input.isKeyJustPressed(Input.Keys.D) ) {
+		if(Gdx.input.isKeyJustPressed(Input.Keys.D) || Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
 			boolean no = false;
 			for(int i = 0; i < 4; i++) {
 				if(position[i][0] >= 4) {
@@ -197,7 +197,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 			}
 			//cam.slide(3.0f * deltaTime, 0, 0);
 		}
-		if(Gdx.input.isKeyJustPressed(Input.Keys.W) && shape != 0) {
+		if(Gdx.input.isKeyJustPressed(Input.Keys.W) && shape != 0 || Gdx.input.isKeyJustPressed(Input.Keys.UP) && shape != 0 ) {
 			ModelMatrix.main.addRotationZ(-90);
 			lastRotation = 90;
 			if(checkCollision() || checkLeftCollision() || checkRightCollision())
@@ -206,7 +206,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 			}
 			
 		}
-		if(Gdx.input.isKeyJustPressed(Input.Keys.S) && shape != 0) {
+		if(Gdx.input.isKeyJustPressed(Input.Keys.S) && shape != 0 || Gdx.input.isKeyJustPressed(Input.Keys.DOWN) && shape != 0) {
 			ModelMatrix.main.addRotationZ(90);
 			lastRotation = -90;
 			if(checkCollision() || checkLeftCollision() || checkRightCollision())
@@ -250,17 +250,14 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		//float s = (float)Math.sin(angle * Math.PI / 180.0);
 		//float c = (float)Math.cos(angle * Math.PI / 180.0);
 		
-		/* Spotlight sets a back-glow effect behind borg cube */
-		shader.setLightColor(0.3f, 0.5f, 0.3f, 1.0f);
-		shader.setLightPosition(0, -8f, 16f, 0);
-		shader.setSpotDirection(0.0f, 0.3f, -1.0f, 0.0f);
-		
+		shader.setLightColor(1.0f, 1.0f, 1.0f, 1.0f);
+		shader.setLightPosition(0, 8f, 16f, 0);
+		shader.setSpotDirection(0.0f, 0.0f, -1.0f, 0.0f);
 		shader.setSpotExponent(10.0f);
-		shader.setConstantAttenuation(1.0f);
-		shader.setLinearAttenuation(0.0f);
-		shader.setQuadraticAttenuation(0.0f);
+		shader.setConstantAttenuation(2.0f);
+		shader.setLinearAttenuation(0.8f);
+		shader.setQuadraticAttenuation(0.2f);
 		
-		/* Global ambience lights up the scene */
 		shader.setGlobalAmbience(0.3f, 0.3f, 0.3f, 1.0f);
 		
 		ModelMatrix.main.pushMatrix();
@@ -269,15 +266,15 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		/* Skybox */
 		shader.setMaterialDiffuse(1.0f, 1.0f, 1.0f, 1.0f);
 		shader.setMaterialSpecular(1.0f, 1.0f, 1.0f, 1.0f);
-		shader.setMaterialShine(200.0f);
+		shader.setMaterialShine(10.0f);
 		shader.setMaterialEmission(0.1f, 0.1f, 0.1f, 1.0f);
-		ModelMatrix.main.addScale(200.0f, 200.0f, 200.0f);
+		ModelMatrix.main.addScale(150.0f, 150.0f, 150.0f);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
-		SphereGraphic.drawSolidSphere(shader, skyBoxTex, null);
+		SphereGraphic.drawSolidSphere(shader, skyBoxTex, skyBoxTex);
 		ModelMatrix.main.popMatrix();
 		
-		//Gdx.gl.glEnable(GL20.GL_BLEND);
 		/* Game background */
+		/*
 		ModelMatrix.main.pushMatrix();
 		ModelMatrix.main.loadIdentityMatrix();
 		shader.setMaterialDiffuse(1.0f, 1.0f, 1.0f, 1.0f);
@@ -291,9 +288,8 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 			
 		BoxGraphic.drawSolidCube(shader, borgCube, specTex);
-		//SpriteGraphic.drawSprite(shader, particleTex, null);
 		ModelMatrix.main.popMatrix();
-		
+		*/
 		/* Game */
 		drawGrid();
 		fillupBoard();
@@ -339,13 +335,11 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 			for(int j = 0; j < 22; j++) {
 					Gdx.gl.glEnable(GL20.GL_BLEND);
 					shader.setMaterialDiffuse(0.3f, 0.3f, 0.3f, 1);
-					//ModelMatrix.main.pushMatrix();
 					ModelMatrix.main.loadIdentityMatrix();
 					ModelMatrix.main.addTranslation((i-6), j-20, -0.7f);
 					shader.setMaterialEmission(0,0,0,1);
 					shader.setModelMatrix(ModelMatrix.main.getMatrix());
 					SpriteGraphic.drawSprite(shader, tex, specTex);
-					//ModelMatrix.main.popMatrix();
 					Gdx.gl.glDisable(GL20.GL_BLEND);
 			}
 		}
