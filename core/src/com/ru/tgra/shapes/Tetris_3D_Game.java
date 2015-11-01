@@ -18,13 +18,14 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 	private float angle;
 	private Camera cam;
 	private float dropTime;
-	private float test;
+	private float time;
 	private float fov = 90.0f;
 	private int shape;
 	private boolean[][] board;
 	private int lastRotation;
 	private int linesKilledAtOnce;
 	private int totalLinesKilled;
+	private int delta;
 	
 	private Texture tex;
 	private Texture specTex;
@@ -51,7 +52,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		Gdx.input.setInputProcessor(this);
 		
 		angle = 0;
-
+		delta = 10;
 		BoxGraphic.create();
 		SkyBox.create();
 		SphereGraphic.create(shader.getVertexPointer(), shader.getNormalPointer());
@@ -77,7 +78,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		dropTime = 0.5f;
 		linesKilledAtOnce = 0;
 		totalLinesKilled = 0;
-		test = 0;
+		time = 0;
 		getNewShape();
 		spaceOn = true;
 		//shape = 2;
@@ -227,7 +228,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		float deltaTime = Gdx.graphics.getDeltaTime();
 		input(deltaTime);	
 		angle += 180.0f * deltaTime;
-		test += deltaTime;
+		time += deltaTime;
 		
 	}
 	
@@ -286,18 +287,18 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		for(int i = 0; i < 4; i++) {
 			if(position[i][1] <= -20) {
 				spaceOn = false;
-				if(test > dropTime) {
+				if(time > dropTime) {
 					stickShapeOnBoard();
 					ModelMatrix.main.loadIdentityMatrix();
 					getNewShape();
-					test = 0;
+					time = 0;
 					spaceOn = true;
 					break;
 				}
 			}
 		}
 		for(int i = 0; i < 4; i++){
-			if(test > dropTime && position[i][1] > -20) {
+			if(time > dropTime && position[i][1] > -20) {
 				if(!checkCollision()) {
 					drop();
 				} else {
@@ -305,7 +306,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 					ModelMatrix.main.loadIdentityMatrix();
 					getNewShape();
 				}
-				test = 0;
+				time = 0;
 				break;
 			}
 		}
@@ -357,7 +358,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 	}
 	public void drop() {
 		ModelMatrix.main.addTranslationBaseCoords(0,-1,0);
-		test = 0;
+		time = 0;
 	}
 	public boolean checkCollision() {
 		for(int i = 0; i < 4; i++) {
@@ -402,6 +403,10 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		while(dropLine()){
 		}
 		totalLinesKilled += linesKilledAtOnce;
+		if(totalLinesKilled > delta){
+			dropTime /= 1.1;
+			delta+=10;
+		}
 		linesKilledAtOnce = 0;
 		if(gameOver()){
 			/*Dunno hvað við ætlum að gera ef það er game over. Ætla bara að restarta eins og er*/
@@ -415,8 +420,10 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 			}
 		}
 		totalLinesKilled = 0;
-		test = 0;
+		time = 0;
 		getNewShape();
+		delta = 10;
+		dropTime = 0.5f;
 	}
 	public boolean gameOver(){
 		for(int i = 0; i < 14; i++){
