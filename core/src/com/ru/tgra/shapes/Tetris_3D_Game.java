@@ -47,7 +47,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		shader = new Shader();
 		
 		DisplayMode disp = Gdx.graphics.getDesktopDisplayMode();
-		//Gdx.graphics.setDisplayMode(disp.width, disp.height, true);
+		Gdx.graphics.setDisplayMode(disp.width, disp.height, true);
 		
 		Gdx.input.setInputProcessor(this);
 		
@@ -66,6 +66,9 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		//ModelMatrix.main.setShaderMatrix(modelMatrixLoc);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
+		Gdx.gl.glEnable(GL20.GL_BLEND);
+		Gdx.gl.glBlendFunc(GL20.GL_ONE, GL20.GL_ONE_MINUS_CONSTANT_ALPHA);
+
 
 		cam = new Camera();
 		cam.look(new Point3D(0.0f, -13f, 16f), new Point3D(0,-8,0), new Vector3D(0,1,0));
@@ -75,7 +78,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		specTex = null;
 		skyBoxTex = new Texture("textures/starSkyBox.png");
 		borgCube = new Texture("textures/borgCube.jpg");
-		particleTex = new Texture("textures/borgCube.jpg");
+		particleTex = new Texture("textures/GreyGradiant01.png");
 		
 		dropTime = 0.5f;
 		linesKilledAtOnce = 0;
@@ -235,12 +238,13 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 	{
 		//do all actual drawing and rendering here
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
-		
+		Gdx.gl.glDisable(GL20.GL_BLEND);
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		cam.perspectiveProjection(fov , 2.0f, 0.1f, 250.0f);
 		shader.setViewMatrix(cam.getViewMatrix());
 		shader.setProjectionMatrix(cam.getProjectionMatrix());
 		shader.setEyePosition(cam.eye.x, cam.eye.y, cam.eye.z, 1.0f);
+		
 		
 		//set world light
 		//float s = (float)Math.sin(angle * Math.PI / 180.0);
@@ -272,11 +276,12 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		SphereGraphic.drawSolidSphere(shader, skyBoxTex, null);
 		ModelMatrix.main.popMatrix();
 		
+		//Gdx.gl.glEnable(GL20.GL_BLEND);
 		/* Game background */
 		ModelMatrix.main.pushMatrix();
 		ModelMatrix.main.loadIdentityMatrix();
 		shader.setMaterialDiffuse(1.0f, 1.0f, 1.0f, 1.0f);
-		shader.setMaterialSpecular(1.0f, 1.0f, 1.0f, 1.0f);
+		shader.setMaterialSpecular(0.0f, 0.0f, 0.0f, 1.0f);
 		shader.setMaterialShine(50);
 		shader.setMaterialEmission(0.1f,0.1f,0.1f,1.0f);
 		ModelMatrix.main.addScale(60.0f, 60.0f, 60.0f);
@@ -290,7 +295,9 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		ModelMatrix.main.popMatrix();
 		
 		/* Game */
+		drawGrid();
 		fillupBoard();
+		shapeOnScreen();
 		
 		for(int i = 0; i < 4; i++){
 			if(position[i][0] > 4 || position[i][0] < -5) {
@@ -298,8 +305,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 				break;
 			}
 		}
-		shapeOnScreen();
-		//shapeO();
+		
 		for(int i = 0; i < 4; i++) {
 			if(position[i][1] <= -20) {
 				spaceOn = false;
@@ -325,11 +331,25 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 				time = 0;
 				break;
 			}
+		}	
+	}
+	public void drawGrid(){
+		ModelMatrix.main.pushMatrix();
+		for(int i = 1; i < 11; i++) {
+			for(int j = 0; j < 22; j++) {
+					Gdx.gl.glEnable(GL20.GL_BLEND);
+					shader.setMaterialDiffuse(0.3f, 0.3f, 0.3f, 1);
+					//ModelMatrix.main.pushMatrix();
+					ModelMatrix.main.loadIdentityMatrix();
+					ModelMatrix.main.addTranslation((i-6), j-20, -0.7f);
+					shader.setMaterialEmission(0,0,0,1);
+					shader.setModelMatrix(ModelMatrix.main.getMatrix());
+					SpriteGraphic.drawSprite(shader, tex, specTex);
+					//ModelMatrix.main.popMatrix();
+					Gdx.gl.glDisable(GL20.GL_BLEND);
+			}
 		}
-		
-		
-		
-		
+		ModelMatrix.main.popMatrix();
 	}
 	public void fillupBoard() {
 		
@@ -416,7 +436,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 			color[x+6][y+22][1] = shapeColor[1];
 			color[x+6][y+22][2] = shapeColor[2];
 		}
-
+		
 		while(dropLine()){
 		}
 		totalLinesKilled += linesKilledAtOnce;
