@@ -234,7 +234,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 		
 		Gdx.gl.glViewport(0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		cam.perspectiveProjection(fov , 2.0f, 0.1f, 100.0f);
+		cam.perspectiveProjection(fov , 2.0f, 0.1f, 220.0f);
 		shader.setViewMatrix(cam.getViewMatrix());
 		shader.setProjectionMatrix(cam.getProjectionMatrix());
 		shader.setEyePosition(cam.eye.x, cam.eye.y, cam.eye.z, 1.0f);
@@ -242,12 +242,12 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		fillupBoard();
 		
 		//set world light
-		//float s = (float)Math.sin(angle * Math.PI / 180.0);
-		//float c = (float)Math.cos(angle * Math.PI / 180.0);
+		float s = (float)Math.sin(angle * Math.PI / 180.0);
+		float c = (float)Math.cos(angle * Math.PI / 180.0);
 		shader.setLightColor(1.0f, 1.0f, 1.0f, 1.0f);
-		shader.setLightPosition(-10.0f, -10.0f, 16.0f, 1.0f);
+		shader.setLightPosition(-10.0f * c, -10.0f, 16.0f * s, 1.0f);
 		shader.setSpotDirection(10.0f, 10.0f, 16.0f, 0.0f);
-		shader.setSpotExponent(10.0f);
+		shader.setSpotExponent(100.0f);
 		shader.setConstantAttenuation(1.3f);
 		shader.setLinearAttenuation(0.0f);
 		shader.setQuadraticAttenuation(0.0f);
