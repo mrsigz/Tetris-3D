@@ -45,7 +45,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		shader = new Shader();
 		
 		DisplayMode disp = Gdx.graphics.getDesktopDisplayMode();
-		Gdx.graphics.setDisplayMode(disp.width, disp.height, true);
+		//Gdx.graphics.setDisplayMode(disp.width, disp.height, true);
 		
 		Gdx.input.setInputProcessor(this);
 		
@@ -68,7 +68,8 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		cam.look(new Point3D(0.0f, -13f, 16f), new Point3D(0,-8,0), new Vector3D(0,1,0));
 		
 		tex = new Texture(Gdx.files.internal("textures/Frame.png"));
-		specTex = new Texture(Gdx.files.internal("textures/Spec01.png"));
+		//specTex = new Texture(Gdx.files.internal("textures/metalSpecTex.png"));
+		specTex = null;
 		skyBoxTex = new Texture("textures/starSkyBox.png");
 		
 		dropTime = 0.5f;
@@ -95,21 +96,18 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 	private void input(float deltaTime)
 	{
 		if(Gdx.input.isKeyJustPressed(Input.Keys.LEFT)) {
-			//cam.rotate(90.0f * deltaTime);
 			move = true;
 			targetX = -15.0f;
 			targetY = -10.0f;
 			targetFOV = 70.0f;
 		}
 		if(Gdx.input.isKeyJustPressed(Input.Keys.RIGHT)) {
-			//cam.rotate(-90.0f * deltaTime);
 			move = true;
 			targetX = 15.0f;
 			targetY = -10.0f;
 			targetFOV = 70.0f;
 		}
 		if(Gdx.input.isKeyJustPressed(Input.Keys.UP)) {
-			//cam.pitch(90.0f * deltaTime);
 			move = true;
 			targetX = 0.0f;
 			targetY = 13.0f;
@@ -245,12 +243,13 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		float s = (float)Math.sin(angle * Math.PI / 180.0);
 		float c = (float)Math.cos(angle * Math.PI / 180.0);
 		shader.setLightColor(1.0f, 1.0f, 1.0f, 1.0f);
-		shader.setLightPosition(-10.0f * c, -10.0f, 16.0f * s, 1.0f);
-		shader.setSpotDirection(10.0f, 10.0f, 16.0f, 0.0f);
+		shader.setLightPosition(cam.eye.x * c, cam.eye.y, cam.eye.z * s, 1.0f);
+		shader.setSpotDirection(-cam.eye.x * c, 0.0f, -cam.eye.z * s, 1.0f);
+		
 		shader.setSpotExponent(100.0f);
 		shader.setConstantAttenuation(1.3f);
-		shader.setLinearAttenuation(0.0f);
-		shader.setQuadraticAttenuation(0.0f);
+		shader.setLinearAttenuation(20.0f);
+		shader.setQuadraticAttenuation(10.0f);
 		
 		shader.setGlobalAmbience(0.3f, 0.3f, 0.3f, 1.0f);
 		
@@ -261,7 +260,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		shader.setMaterialDiffuse(1.0f, 1.0f, 1.0f, 1.0f);
 		shader.setMaterialSpecular(1.0f, 1.0f, 1.0f, 1.0f);
 		shader.setMaterialShine(200.0f);
-		shader.setMaterialEmission(0.0f, 0.0f, 0.0f, 1.0f);
+		shader.setMaterialEmission(0.1f, 0.1f, 0.1f, 1.0f);
 		ModelMatrix.main.addScale(100.0f, 100.0f, 100.0f);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 		//BoxGraphic.drawSolidCube(shader, tex, specTex);
