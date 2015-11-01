@@ -18,11 +18,14 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 	private float angle;
 	private Camera cam;
 	private float dropTime;
-	private float test;
+	private float time;
 	private float fov = 90.0f;
 	private int shape;
 	private boolean[][] board;
 	private int lastRotation;
+	private int linesKilledAtOnce;
+	private int totalLinesKilled;
+	private int delta;
 	
 	private Texture tex;
 	private Texture specTex;
@@ -47,7 +50,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		Gdx.input.setInputProcessor(this);
 		
 		angle = 0;
-
+		delta = 10;
 		BoxGraphic.create();
 		SphereGraphic.create();
 		SincGraphic.create(shader.getVertexPointer());
@@ -68,9 +71,10 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		specTex = new Texture(Gdx.files.internal("textures/Spec01.png"));
 		skyBoxTex = new Texture("textures/starSkyBox.png");
 		
-		dropTime = 2;
-
-		test = 0;
+		dropTime = 0.5f;
+		linesKilledAtOnce = 0;
+		totalLinesKilled = 0;
+		time = 0;
 		getNewShape();
 		spaceOn = true;
 		//shape = 2;
@@ -203,7 +207,6 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 			{
 				ModelMatrix.main.addRotationZ(lastRotation);
 			}
-			//System.out.println(rotation);
 		}
 		if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
 			Gdx.graphics.setDisplayMode(500,500,false);
@@ -221,7 +224,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		float deltaTime = Gdx.graphics.getDeltaTime();
 		input(deltaTime);	
 		angle += 180.0f * deltaTime;
-		test += deltaTime;
+		time += deltaTime;
 		
 	}
 	
@@ -235,6 +238,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		shader.setViewMatrix(cam.getViewMatrix());
 		shader.setProjectionMatrix(cam.getProjectionMatrix());
 		shader.setEyePosition(cam.eye.x, cam.eye.y, cam.eye.z, 1.0f);
+		
 		fillupBoard();
 		
 		//set world light
@@ -263,24 +267,24 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		//BoxGraphic.drawSolidCube(shader, tex, specTex);
 		SphereGraphic.drawSolidSphere(shader, skyBoxTex, skyBoxTex);
 		ModelMatrix.main.popMatrix();
-		
+
 		shapeOnScreen();
 		//shapeO();
 		for(int i = 0; i < 4; i++) {
 			if(position[i][1] <= -20) {
 				spaceOn = false;
-				if(test > dropTime) {
+				if(time > dropTime) {
 					stickShapeOnBoard();
 					ModelMatrix.main.loadIdentityMatrix();
 					getNewShape();
-					test = 0;
+					time = 0;
 					spaceOn = true;
 					break;
 				}
 			}
 		}
 		for(int i = 0; i < 4; i++){
-			if(test > dropTime && position[i][1] > -20) {
+			if(time > dropTime && position[i][1] > -20) {
 				if(!checkCollision()) {
 					drop();
 				} else {
@@ -288,7 +292,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 					ModelMatrix.main.loadIdentityMatrix();
 					getNewShape();
 				}
-				test = 0;
+				time = 0;
 				break;
 			}
 		}
@@ -341,13 +345,12 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 	}
 	public void drop() {
 		ModelMatrix.main.addTranslationBaseCoords(0,-1,0);
-		test = 0;
+		time = 0;
 	}
 	public boolean checkCollision() {
 		for(int i = 0; i < 4; i++) {
 			int x = (int)position[i][0];
 			int y = (int)position[i][1];
-			//System.out.println("x: " + (x+5) + " y:" + (y+22));
 			if(board[x+6][y+21]){
 				return true;
 			}
@@ -358,7 +361,6 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		for(int i = 0; i < 4; i++) {
 			int x = (int)position[i][0];
 			int y = (int)position[i][1];
-			//System.out.println("x: " + (x+5) + " y:" + (y+22));
 			if(board[x+5][y+22]){
 				return true;
 			}
@@ -369,7 +371,6 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		for(int i = 0; i < 4; i++) {
 			int x = (int)position[i][0];
 			int y = (int)position[i][1];
-			//System.out.println("x: " + (x+5) + " y:" + (y+22));
 			if(board[x+7][y+22]){
 				return true;
 			}
@@ -385,6 +386,65 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 			color[x+6][y+22][1] = shapeColor[1];
 			color[x+6][y+22][2] = shapeColor[2];
 		}
+
+		while(dropLine()){
+		}
+		totalLinesKilled += linesKilledAtOnce;
+		if(totalLinesKilled > delta){
+			dropTime /= 1.1;
+			delta+=10;
+		}
+		linesKilledAtOnce = 0;
+		if(gameOver()){
+			/*Dunno hvað við ætlum að gera ef það er game over. Ætla bara að restarta eins og er*/
+			restart();
+		}
+	}
+	public void restart(){
+		for(int i = 0; i < 14; i++){
+			for(int j = 0; j <25; j++) {
+				board[i][j] = false;
+			}
+		}
+		totalLinesKilled = 0;
+		time = 0;
+		getNewShape();
+		delta = 10;
+		dropTime = 0.5f;
+	}
+	public boolean gameOver(){
+		for(int i = 0; i < 14; i++){
+			if(board[i][22]){
+				return true;
+			}
+		}
+		return false;
+	}
+	public boolean dropLine() {
+		boolean ret = false;
+		for(int i = 0; i < 22; i++){
+			boolean dropline = true;
+			for(int j = 1; j < 11; j++){
+				if(!board[j][i]){
+					dropline = false;
+					break;
+				}
+			}
+			if(dropline) {
+				linesKilledAtOnce++;
+				ret = true;
+				for(int j = 1; j < 11; j++){
+					for(int k = i; k < 22; k++){
+						board[j][k] = board[j][k+1];
+						color[j][k][0] = color[j][k+1][0];
+						color[j][k][1] = color[j][k+1][1];
+						color[j][k][2] = color[j][k+1][2];
+					}
+				}
+			}
+		}
+		return ret;
+		
 	}
 	public void getNewShape() {
 		Random rand = new Random();
