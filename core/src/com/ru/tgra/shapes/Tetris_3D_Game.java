@@ -265,7 +265,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		ModelMatrix.main.addScale(100.0f, 100.0f, 100.0f);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 		//BoxGraphic.drawSolidCube(shader, tex, specTex);
-		SphereGraphic.drawSolidSphere(shader, skyBoxTex, skyBoxTex);
+		SphereGraphic.drawSolidSphere(shader, skyBoxTex, null);
 		ModelMatrix.main.popMatrix();
 
 		
