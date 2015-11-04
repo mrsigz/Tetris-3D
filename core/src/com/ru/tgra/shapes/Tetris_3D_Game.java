@@ -63,7 +63,6 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 
 		ModelMatrix.main = new ModelMatrix();
 		ModelMatrix.main.loadIdentityMatrix();
-		//ModelMatrix.main.setShaderMatrix(modelMatrixLoc);
 		shader.setModelMatrix(ModelMatrix.main.getMatrix());
 		Gdx.gl.glEnable(GL20.GL_DEPTH_TEST);
 		Gdx.gl.glEnable(GL20.GL_BLEND);
@@ -78,7 +77,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		//specTex = null;
 		skyBoxTex = new Texture("textures/starSkyBox.png");
 		borgCube = new Texture("textures/borgCube.jpg");
-		particleTex = new Texture("textures/GreyGradiant01.png");
+		//particleTex = new Texture("textures/GreyGradiant01.png");
 		
 		dropTime = 0.5f;
 		linesKilledAtOnce = 0;
@@ -246,10 +245,7 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		shader.setEyePosition(cam.eye.x, cam.eye.y, cam.eye.z, 1.0f);
 		
 		
-		//set world light
-		//float s = (float)Math.sin(angle * Math.PI / 180.0);
-		//float c = (float)Math.cos(angle * Math.PI / 180.0);
-		
+		//set world light	
 		shader.setLightColor(1.0f, 1.0f, 1.0f, 1.0f);
 		shader.setLightPosition(0, 8f, 16f, 0);
 		shader.setSpotDirection(0.0f, 0.0f, -1.0f, 0.0f);
@@ -273,23 +269,6 @@ public class Tetris_3D_Game extends ApplicationAdapter implements InputProcessor
 		SphereGraphic.drawSolidSphere(shader, skyBoxTex, skyBoxTex);
 		ModelMatrix.main.popMatrix();
 		
-		/* Game background */
-		/*
-		ModelMatrix.main.pushMatrix();
-		ModelMatrix.main.loadIdentityMatrix();
-		shader.setMaterialDiffuse(1.0f, 1.0f, 1.0f, 1.0f);
-		shader.setMaterialSpecular(0.0f, 0.0f, 0.0f, 1.0f);
-		shader.setMaterialShine(50);
-		shader.setMaterialEmission(0.1f,0.1f,0.1f,1.0f);
-		ModelMatrix.main.addScale(60.0f, 60.0f, 60.0f);
-		ModelMatrix.main.addTranslation(0, 0.3f, -1);
-		ModelMatrix.main.addRotationX(45);
-		ModelMatrix.main.addRotationY(angle / 12);
-		shader.setModelMatrix(ModelMatrix.main.getMatrix());
-			
-		BoxGraphic.drawSolidCube(shader, borgCube, specTex);
-		ModelMatrix.main.popMatrix();
-		*/
 		/* Game */
 		drawGrid();
 		fillupBoard();
